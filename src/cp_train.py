@@ -38,7 +38,7 @@ print(f'Number of parameters(M): {num_params / 1e6:.2f}')
 
 # 定義損失函數和優化器
 criterion = nn.CrossEntropyLoss()
-optimizer = tiopt.Lookahead(optim.AdamW(net.parameters(), lr=0.0001))
+optimizer = tiopt.Lookahead(optim.AdamW(net.parameters(), lr=4e-4))
 
 # 訓練模型
 confidence = {}

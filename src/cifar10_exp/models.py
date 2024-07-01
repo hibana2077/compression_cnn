@@ -10,6 +10,7 @@ class Compression(nn.Module):
             nn.AdaptiveAvgPool2d((5, 5)),
             nn.GELU()
         )
+        self.name = 'CompressionNet'
         self.pool = nn.MaxPool2d(2, 2)
         self.flatten = nn.Flatten()
         self.fc = nn.Linear(9200, 10)
@@ -20,9 +21,9 @@ class Compression(nn.Module):
         
     def forward(self, x):
         temp_stack = []
-        x = F.gelu(self.conv1(x))
+        x = F.relu(self.conv1(x))
         temp_stack.append(self.compress(x))
-        x = F.gelu(self.conv2(x))
+        x = F.relu(self.conv2(x))
         temp_stack.append(self.compress(x))
         x = self.pool(x)
         x = self.conv3(x)
