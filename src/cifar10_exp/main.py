@@ -64,12 +64,12 @@ print('==> Building model..')
 # net,net_name = QuadCompression(), 'QuadCompression'
 # net,net_name = timm.create_model('convnextv2_tiny',num_classes=10), 'convnextv2_tiny'
 # net,net_name = timm.create_model('convnextv2_small',num_classes=10), 'convnextv2_small'
-net,net_name = timm.create_model('seresnet18',num_classes=10), "seresnet18"
+# net,net_name = timm.create_model('seresnet18',num_classes=10), "seresnet18"
 # net,net_name = timm.create_model('resnet101',num_classes=10), "resnet101"
 # net,net_name = timm.create_model('efficientnet_b0',num_classes=10), "efficientnet_b0"
 # net,net_name = timm.create_model('regnetx_080',num_classes=10), "regnetx_080"
 # net,net_name = timm.create_model('convnext_nano',num_classes=10), "convnext_nano"
-# net,net_name = timm.create_model('convnext_pico',num_classes=10), "convnext_pico"
+net,net_name = timm.create_model('convnext_pico',num_classes=10), "convnext_pico"
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
@@ -87,9 +87,9 @@ if args.resume:
     start_epoch = checkpoint['epoch']
 
 criterion = nn.CrossEntropyLoss()
-# optimizer = optim.AdamW(net.parameters(), lr=4e-3, weight_decay=5e-4)
-optimizer = optim.AdamW(net.parameters(), lr=4e-3)
-# optimizer = optim.AdamW(net.parameters(), lr=4e-3, weight_decay=0.05, betas=(0.9, 0.999))
+# optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=5e-4)
+# optimizer = optim.AdamW(net.parameters(), lr=4e-4)
+optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=0.05, betas=(0.9, 0.999))
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 
