@@ -42,4 +42,5 @@ if __name__ == '__main__':
     model = Compression()
     x = torch.randn(4, 3, 32, 32)
     y = model(x)
+    print(f"Parameter count(M): {sum(p.numel() for p in model.parameters()) / 1e6}")
     print(y.size())

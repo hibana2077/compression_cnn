@@ -21,7 +21,7 @@ train_loss_history = []
 train_acc_history = []
 test_loss_history = []
 test_acc_history = []
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
@@ -61,10 +61,14 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-# net,net_name = timm.create_model('seresnet18'), "seresnet18"
-# net,net_name = timm.create_model('efficientnet_b0'), "efficientnet_b0"
-# net,net_name = timm.create_model('convnext_nano'), "convnext_nano"
-net,net_name = timm.create_model('convnext_pico'), "convnext_pico"
+# net,net_name = QuadCompression(), 'QuadCompression'
+# net,net_name = timm.create_model('regnetx_080',num_classes=10), 'regnetx_080'
+# net,net_name = timm.create_model('convnextv2_tiny',num_classes=10), 'convnextv2_tiny'
+# net,net_name = timm.create_model('seresnet18',num_classes=10), "seresnet18"
+# net,net_name = timm.create_model('efficientnet_b0',num_classes=10), "efficientnet_b0"
+net,net_name = timm.create_model('deit3_medium_patch16_224',num_classes=10), "deit3_medium_patch16_224"
+# net,net_name = timm.create_model('convnext_nano',num_classes=10), "convnext_nano"
+# net,net_name = timm.create_model('convnext_pico',num_classes=10), "convnext_pico"
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
@@ -151,7 +155,7 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+10):
+for epoch in range(start_epoch, start_epoch+200):
     train(epoch)
     test(epoch)
     scheduler.step()
