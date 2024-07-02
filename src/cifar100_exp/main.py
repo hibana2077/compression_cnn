@@ -58,12 +58,12 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-# net,net_name = QuadCompression(), 'QuadCompression'
+net,net_name = QuadCompression(), 'QuadCompression'
 # net,net_name = timm.create_model('convnextv2_tiny',num_classes=100), 'convnextv2_tiny'
 # net,net_name = timm.create_model('convnextv2_small',num_classes=100), 'convnextv2_small'
 # net,net_name = timm.create_model('seresnet18',num_classes=1000), "seresnet18"
-net,net_name = timm.create_model('resnet101',num_classes=100), "resnet101"
-# net,net_name = timm.create_model('efficientnet_b0',num_classes=100), "efficientnet_b0"
+# net,net_name = timm.create_model('resnet101',num_classes=100), "resnet101"
+# net,net_name = timm.create_model('vovnet57a',num_classes=100), "vovnet57a"
 # net,net_name = timm.create_model('regnetx_080',num_classes=100), "regnetx_080"
 # net,net_name = timm.create_model('convnext_nano',num_classes=100), "convnext_nano"
 # net,net_name = timm.create_model('convnext_pico',num_classes=100), "convnext_pico"
@@ -86,7 +86,7 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=5e-4)
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4)
-optimizer = optim.AdamW(net.parameters(), lr=1e-3, weight_decay=0.05, betas=(0.9, 0.999))
+optimizer = optim.AdamW(net.parameters(), lr=5e-4, weight_decay=0.05, betas=(0.9, 0.999))
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 
