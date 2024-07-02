@@ -44,7 +44,7 @@ class DueCompression(nn.Module):
         self.compressionA = Compression()
         self.compressionB = Compression()
         self.fusion1 = nn.Linear(9200*2, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -66,7 +66,7 @@ class QuadCompression(nn.Module):
         self.compressionC = Compression()
         self.compressionD = Compression()
         self.fusion1 = nn.Linear(9200*4, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -94,7 +94,7 @@ class OctoCompression(nn.Module):
         self.compressionG = Compression()
         self.compressionH = Compression()
         self.fusion1 = nn.Linear(9200*8, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -134,7 +134,7 @@ class HexaCompression(nn.Module):
         self.compressionO = Compression() #15
         self.compressionP = Compression() #16
         self.fusion1 = nn.Linear(9200*16, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):

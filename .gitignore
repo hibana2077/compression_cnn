@@ -3,3 +3,5 @@ src/data
 src/cifar10_exp/checkpoint/ckpt.pth
 src/cifar10_exp/__pycache__/models.cpython-312.pyc
 src/cifar10_exp/__pycache__/utils.cpython-312.pyc
+src/cifar100_exp/checkpoint/ckpt.pth
+src/cifar100_exp/__pycache__/models.cpython-312.pyc
