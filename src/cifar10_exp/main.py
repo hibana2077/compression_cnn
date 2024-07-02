@@ -62,11 +62,10 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
 # net,net_name = QuadCompression(), 'QuadCompression'
-# net,net_name = timm.create_model('regnetx_080',num_classes=10), 'regnetx_080'
 # net,net_name = timm.create_model('convnextv2_tiny',num_classes=10), 'convnextv2_tiny'
 # net,net_name = timm.create_model('seresnet18',num_classes=10), "seresnet18"
 # net,net_name = timm.create_model('efficientnet_b0',num_classes=10), "efficientnet_b0"
-net,net_name = timm.create_model('deit3_medium_patch16_224',num_classes=10), "deit3_medium_patch16_224"
+net,net_name = timm.create_model('regnetx_080',num_classes=10), "regnetx_080"
 # net,net_name = timm.create_model('convnext_nano',num_classes=10), "convnext_nano"
 # net,net_name = timm.create_model('convnext_pico',num_classes=10), "convnext_pico"
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
