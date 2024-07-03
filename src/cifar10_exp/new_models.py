@@ -120,26 +120,24 @@ class Compression_M(nn.Module): #medium
     def __init__(self):
         super(Compression_M, self).__init__()
         self.compress = nn.Sequential(
-            nn.AdaptiveAvgPool2d((5, 5)),
+            nn.AdaptiveAvgPool2d((2, 2)),
             nn.GELU()
         )
         self.pool = nn.MaxPool2d(2, 2)
-        self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.flatten = nn.Flatten()
-        self.conv1 = nn.Conv2d(3, 64, 7)
-        self.se1 = SELayer(64)
-        self.conv2 = nn.Conv2d(64, 96, 3)
-        self.se2 = SELayer(96)
-        self.conv3 = nn.Conv2d(96, 384, 3)
-        self.se3 = SELayer(384)
-        self.conv4 = nn.Conv2d(384, 768, 3)
+        self.conv1 = nn.Conv2d(3, 32, 3)
+        self.se1 = SELayer(32)
+        self.conv2 = nn.Conv2d(32, 64, 3)
+        self.se2 = SELayer(64)
+        self.conv3 = nn.Conv2d(64, 192, 3)
+        self.se3 = SELayer(192)
+        self.conv4 = nn.Conv2d(192, 768, 3)
         self.se4 = SELayer(768)
-        self.conv5 = nn.Conv2d(2080, 256, 1)
-        self.se5 = SELayer(256)
+        self.conv5 = nn.Conv2d(1824, 384, 1)
+        self.se5 = SELayer(384)
         
     def forward(self, x):
         temp_stack = []
-        x = self.up(x)
         x = self.conv1(x)
         x = self.se1(x)
         x = F.relu(x)
@@ -164,7 +162,7 @@ class Compression_M(nn.Module): #medium
         x = F.layer_norm(x, x.size()[1:])
         x = self.flatten(x)
         x = F.gelu(x)
-        return x # (4, 6400)
+        return x # (4, 1536)
 
 class CompressionNet_tiny(nn.Module):
     def __init__(self):
@@ -174,7 +172,7 @@ class CompressionNet_tiny(nn.Module):
             nn.Linear(384, 64),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(64, 100)
+            nn.Linear(64, 10)
         )
 
     def forward(self, x):
@@ -190,7 +188,7 @@ class CompressionNet_small(nn.Module):
             nn.Linear(768, 128),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(128, 100)
+            nn.Linear(128, 10)
         )
 
     def forward(self, x):
@@ -203,10 +201,10 @@ class CompressionNet_medium(nn.Module):
         super(CompressionNet_medium, self).__init__()
         self.compression = Compression_M()
         self.cls = nn.Sequential(
-            nn.Linear(6400, 2048),
+            nn.Linear(1536, 512),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(2048, 100)
+            nn.Linear(512, 10)
         )
 
     def forward(self, x):
@@ -220,7 +218,7 @@ class DueCompression(nn.Module):
         self.compressionA = Compression_S()
         self.compressionB = Compression_S()
         self.fusion1 = nn.Linear(384*2, 1024)
-        self.fusion2 = nn.Linear(1024, 100)
+        self.fusion2 = nn.Linear(1024, 10)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):

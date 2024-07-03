@@ -58,15 +58,33 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-net,net_name = QuadCompression(), 'QuadCompression'
-# net,net_name = timm.create_model('convnextv2_tiny',num_classes=100), 'convnextv2_tiny'
-# net,net_name = timm.create_model('convnextv2_small',num_classes=100), 'convnextv2_small'
-# net,net_name = timm.create_model('seresnet18',num_classes=1000), "seresnet18"
-# net,net_name = timm.create_model('resnet101',num_classes=100), "resnet101"
-# net,net_name = timm.create_model('vovnet57a',num_classes=100), "vovnet57a"
-# net,net_name = timm.create_model('regnetx_080',num_classes=100), "regnetx_080"
-# net,net_name = timm.create_model('convnext_nano',num_classes=100), "convnext_nano"
-# net,net_name = timm.create_model('convnext_pico',num_classes=100), "convnext_pico"
+# net,net_name = CompressionNet_tiny(), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_small(), 'CompressionNet_small'
+net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
+# ResNet
+# net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=10), 'resnet18'
+# net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=10), 'resnet50'
+# net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=10), 'resnet101'
+# net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=10), 'resnet152'
+# EfficientNet
+# net, net_name = timm.create_model('efficientnet_b0', pretrained=False, num_classes=10), 'efficientnet_b0'
+# net, net_name = timm.create_model('efficientnet_b1', pretrained=False, num_classes=10), 'efficientnet_b1'
+# net, net_name = timm.create_model('efficientnet_b2', pretrained=False, num_classes=10), 'efficientnet_b2'
+# net, net_name = timm.create_model('efficientnet_b3', pretrained=False, num_classes=10), 'efficientnet_b3'
+# net, net_name = timm.create_model('efficientnet_b4', pretrained=False, num_classes=10), 'efficientnet_b4'
+# net, net_name = timm.create_model('efficientnet_b5', pretrained=False, num_classes=10), 'efficientnet_b5'
+# net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=10), 'efficientnet_b6'
+# net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=10), 'efficientnet_b7'
+# Convnext
+# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=10), 'convnextv2_atto'
+# net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=10), 'convnextv2_femto'
+# net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=10), 'convnextv2_pico'
+# net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=10), 'convnextv2_nano'
+# net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=10), 'convnextv2_tiny'
+# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=10), 'convnextv2_small'
+# net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=10), 'convnextv2_base'
+# net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=10), 'convnextv2_large'
+# net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=10), 'convnextv2_huge'
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
