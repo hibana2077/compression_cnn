@@ -3,48 +3,228 @@ import torch.nn.functional as F
 import torch.nn as nn
 import numpy as np
 
-class Compression(nn.Module):
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y.expand_as(x)
+
+class Compression_T(nn.Module): #tiny
     def __init__(self):
-        super(Compression, self).__init__()
+        super(Compression_T, self).__init__()
         self.compress = nn.Sequential(
-            nn.AdaptiveAvgPool2d((5, 5)),
+            nn.AdaptiveAvgPool2d((2, 2)),
             nn.GELU()
         )
-        self.name = 'CompressionNet'
         self.pool = nn.MaxPool2d(2, 2)
         self.flatten = nn.Flatten()
         self.conv1 = nn.Conv2d(3, 16, 3)
+        self.se1 = SELayer(16)
         self.conv2 = nn.Conv2d(16, 32, 3)
-        self.conv3 = nn.Conv2d(32, 64, 3)
-        self.conv4 = nn.Conv2d(64, 128, 3)# maybe change dim 96 -> 384
+        self.se2 = SELayer(32)
+        self.conv3 = nn.Conv2d(32, 96, 3)
+        self.se3 = SELayer(96)
+        self.conv4 = nn.Conv2d(96, 384, 3)
+        self.se4 = SELayer(384)
+        self.conv5 = nn.Conv2d(912, 96, 1)
+        self.se5 = SELayer(96)
         
     def forward(self, x):
+        x = F.adaptive_avg_pool2d(x, (32, 32))
         temp_stack = []
-        x = F.relu(self.conv1(x))
+        x = self.conv1(x)
+        x = self.se1(x)
+        x = F.relu(x)
         temp_stack.append(self.compress(x))
-        x = F.relu(self.conv2(x))
+        x = self.conv2(x)
+        x = self.se2(x)
+        x = F.relu(x)
         temp_stack.append(self.compress(x))
         x = self.pool(x)
         x = self.conv3(x)
+        x = self.se3(x)
+        x = self.pool(x)
         temp_stack.append(self.compress(x))
         x = self.conv4(x)
+        x = self.se4(x)
         temp_stack.append(self.compress(x))
         x = self.pool(x)
-        total = torch.cat(temp_stack, dim=1)# maybe can add more conv layers
+        total = torch.cat(temp_stack, dim=1)
         x = torch.cat([x, total], dim=1)
+        x = self.conv5(x)
+        x = self.se5(x)
         x = F.layer_norm(x, x.size()[1:])
         x = self.flatten(x)
         x = F.gelu(x)
-        return x # (4,9200)
+        return x # (4, 384)
     
+class Compression_S(nn.Module): #small
+    def __init__(self):
+        super(Compression_S, self).__init__()
+        self.compress = nn.Sequential(
+            nn.AdaptiveAvgPool2d((2, 2)),
+            nn.GELU()
+        )
+        self.pool = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+        self.conv1 = nn.Conv2d(3, 32, 3)
+        self.se1 = SELayer(32)
+        self.conv2 = nn.Conv2d(32, 64, 3)
+        self.se2 = SELayer(64)
+        self.conv3 = nn.Conv2d(64, 96, 3)
+        self.se3 = SELayer(96)
+        self.conv4 = nn.Conv2d(96, 384, 3)
+        self.se4 = SELayer(384)
+        self.conv5 = nn.Conv2d(960, 192, 1)
+        self.se5 = SELayer(192)
+        
+    def forward(self, x):
+        temp_stack = []
+        x = self.conv1(x)
+        x = self.se1(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv2(x)
+        x = self.se2(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        x = self.conv3(x)
+        x = self.se3(x)
+        x = self.pool(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv4(x)
+        x = self.se4(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        total = torch.cat(temp_stack, dim=1)
+        x = torch.cat([x, total], dim=1)
+        x = self.conv5(x)
+        x = self.se5(x)
+        x = F.layer_norm(x, x.size()[1:])
+        x = self.flatten(x)
+        x = F.gelu(x)
+        return x # (4, 768)
+    
+class Compression_M(nn.Module): #medium
+    def __init__(self):
+        super(Compression_M, self).__init__()
+        self.compress = nn.Sequential(
+            nn.AdaptiveAvgPool2d((21, 21)),
+            nn.GELU()
+        )
+        self.pool = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+        self.conv1 = nn.Conv2d(3, 64, 7)
+        self.se1 = SELayer(64)
+        self.conv2 = nn.Conv2d(64, 96, 7)
+        self.se2 = SELayer(96)
+        self.conv3 = nn.Conv2d(96, 384, 5)
+        self.se3 = SELayer(384)
+        self.conv4 = nn.Conv2d(384, 768, 5)
+        self.se4 = SELayer(768)
+        self.conv5 = nn.Conv2d(768, 1536, 3)
+        self.se5 = SELayer(1536)
+        self.conv6 = nn.Conv2d(4384, 96, 1)
+        self.se6 = SELayer(96)
+        
+    def forward(self, x):
+        temp_stack = []
+        x = self.conv1(x)
+        x = self.se1(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv2(x)
+        x = self.se2(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        x = self.conv3(x)
+        x = self.se3(x)
+        x = self.pool(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv4(x)
+        x = self.se4(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        x = self.conv5(x)
+        x = self.se5(x)
+        temp_stack.append(self.compress(x))
+        total = torch.cat(temp_stack, dim=1)
+        x = torch.cat([x, total], dim=1)
+        x = self.conv6(x)
+        x = self.se6(x)
+        x = F.layer_norm(x, x.size()[1:])
+        x = self.flatten(x)
+        x = F.gelu(x)
+        return x # (4, 42336)
+
+class CompressionNet_tiny(nn.Module):
+    def __init__(self):
+        super(CompressionNet_tiny, self).__init__()
+        self.compression = Compression_T()
+        self.cls = nn.Sequential(
+            nn.Linear(384, 64),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(64, 1000)
+        )
+
+    def forward(self, x):
+        x = self.compression(x)
+        x = self.cls(x)
+        return x
+    
+class CompressionNet_small(nn.Module):
+    def __init__(self):
+        super(CompressionNet_small, self).__init__()
+        self.compression = Compression_S()
+        self.cls = nn.Sequential(
+            nn.Linear(768, 128),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(128, 1000)
+        )
+
+    def forward(self, x):
+        x = self.compression(x)
+        x = self.cls(x)
+        return x
+
+class CompressionNet_medium(nn.Module):
+    def __init__(self):
+        super(CompressionNet_medium, self).__init__()
+        self.compression = Compression_M()
+        self.cls = nn.Sequential(
+            nn.Linear(42336, 1024),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(1024, 1000)
+        )
+
+    def forward(self, x):
+        x = self.compression(x)
+        x = self.cls(x)
+        return x
+
 class DueCompression(nn.Module):
     def __init__(self):
         super(DueCompression, self).__init__()
-        self.name = 'Due_CompressionNet'
-        self.compressionA = Compression()
-        self.compressionB = Compression()
-        self.fusion1 = nn.Linear(9200*2, 1024)
-        self.fusion2 = nn.Linear(1024, 100)
+        self.compressionA = Compression_S()
+        self.compressionB = Compression_S()
+        self.fusion1 = nn.Linear(384*2, 1024)
+        self.fusion2 = nn.Linear(1024, 1000)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -57,113 +237,9 @@ class DueCompression(nn.Module):
         x = self.fusion2(x)
         return x
 
-class QuadCompression(nn.Module):
-    def __init__(self):
-        super(QuadCompression, self).__init__()
-        self.name = 'Quad_CompressionNet'
-        self.compressionA = Compression()
-        self.compressionB = Compression()
-        self.compressionC = Compression()
-        self.compressionD = Compression()
-        self.fusion1 = nn.Linear(9200*4, 1024)
-        self.fusion2 = nn.Linear(1024, 100)
-        self.dropout = nn.Dropout(0.5)
-        
-    def forward(self, x):
-        x_A = self.compressionA(x)
-        x_B = self.compressionB(x)
-        x_C = self.compressionC(x)
-        x_D = self.compressionD(x)
-        x = torch.cat([x_A, x_B, x_C, x_D], dim=1)
-        x = self.fusion1(x)
-        x = F.gelu(x)
-        x = self.dropout(x)
-        x = self.fusion2(x)
-        return x
-    
-class OctoCompression(nn.Module):
-    def __init__(self):
-        super(OctoCompression, self).__init__()
-        self.name = 'Octo_CompressionNet'
-        self.compressionA = Compression()
-        self.compressionB = Compression()
-        self.compressionC = Compression()
-        self.compressionD = Compression()
-        self.compressionE = Compression()
-        self.compressionF = Compression()
-        self.compressionG = Compression()
-        self.compressionH = Compression()
-        self.fusion1 = nn.Linear(9200*8, 1024)
-        self.fusion2 = nn.Linear(1024, 100)
-        self.dropout = nn.Dropout(0.5)
-        
-    def forward(self, x):
-        x_A = self.compressionA(x)
-        x_B = self.compressionB(x)
-        x_C = self.compressionC(x)
-        x_D = self.compressionD(x)
-        x_E = self.compressionE(x)
-        x_F = self.compressionF(x)
-        x_G = self.compressionG(x)
-        x_H = self.compressionH(x)
-        x = torch.cat([x_A, x_B, x_C, x_D, x_E, x_F, x_G, x_H], dim=1)
-        x = self.fusion1(x)
-        x = F.gelu(x)
-        x = self.dropout(x)
-        x = self.fusion2(x)
-        return x
-    
-class HexaCompression(nn.Module):
-    def __init__(self):
-        super(HexaCompression, self).__init__()
-        self.name = 'Hexa_CompressionNet'
-        self.compressionA = Compression() #1
-        self.compressionB = Compression() #2
-        self.compressionC = Compression() #3
-        self.compressionD = Compression() #4
-        self.compressionE = Compression() #5
-        self.compressionF = Compression() #6
-        self.compressionG = Compression() #7
-        self.compressionH = Compression() #8
-        self.compressionI = Compression() #9
-        self.compressionJ = Compression() #10
-        self.compressionK = Compression() #11
-        self.compressionL = Compression() #12
-        self.compressionM = Compression() #13
-        self.compressionN = Compression() #14
-        self.compressionO = Compression() #15
-        self.compressionP = Compression() #16
-        self.fusion1 = nn.Linear(9200*16, 1024)
-        self.fusion2 = nn.Linear(1024, 100)
-        self.dropout = nn.Dropout(0.5)
-
-    def forward(self, x):
-        x_A = self.compressionA(x)
-        x_B = self.compressionB(x)
-        x_C = self.compressionC(x)
-        x_D = self.compressionD(x)
-        x_E = self.compressionE(x)
-        x_F = self.compressionF(x)
-        x_G = self.compressionG(x)
-        x_H = self.compressionH(x)
-        x_I = self.compressionI(x)
-        x_J = self.compressionJ(x)
-        x_K = self.compressionK(x)
-        x_L = self.compressionL(x)
-        x_M = self.compressionM(x)
-        x_N = self.compressionN(x)
-        x_O = self.compressionO(x)
-        x_P = self.compressionP(x)
-        x = torch.cat([x_A, x_B, x_C, x_D, x_E, x_F, x_G, x_H, x_I, x_J, x_K, x_L, x_M, x_N, x_O, x_P], dim=1)
-        x = self.fusion1(x)
-        x = F.gelu(x)
-        x = self.dropout(x)
-        x = self.fusion2(x)
-        return x
-
 if __name__ == '__main__':
-    model = HexaCompression()
-    x = torch.randn(4, 3, 32, 32)
+    model = CompressionNet_medium()
+    x = torch.randn(4, 3, 224, 224)
     y = model(x)
     print(f"Parameter count(M): {sum(p.numel() for p in model.parameters()) / 1e6}")
     print(y.size())

@@ -1,5 +1,9 @@
-src/data/cifar-10-batches-py/readme.html
-src/data
+src/data/cifar-10-batches-py
+src/data/cifar-100-python
+src/data/cifar-100-python.tar.gz
+src/data/cifar-10-python.tar.gz
+src/data/imagenet/imagenet
+src/data/imagenet/ILSVRC2012_devkit_t12.tar.gz
 src/cifar10_exp/checkpoint/ckpt.pth
 src/cifar10_exp/__pycache__/models.cpython-312.pyc
 src/cifar10_exp/__pycache__/utils.cpython-312.pyc
