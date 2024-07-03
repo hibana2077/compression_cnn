@@ -1,4 +1,4 @@
-'''Train CIFAR100 with PyTorch.'''
+'''Train ImageNet with PyTorch.'''
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -22,7 +22,7 @@ train_acc_history = []
 test_loss_history = []
 test_acc_history = []
 BATCH_SIZE = 2048
-parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
+parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
 args = parser.parse_args()
