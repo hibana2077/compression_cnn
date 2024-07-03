@@ -1,4 +1,4 @@
-'''Train CIFAR10 with PyTorch.'''
+'''Train CIFAR100 with PyTorch.'''
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -22,7 +22,7 @@ train_acc_history = []
 test_loss_history = []
 test_acc_history = []
 BATCH_SIZE = 128
-parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
+parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
 args = parser.parse_args()
@@ -34,42 +34,40 @@ start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 # Data
 print('==> Preparing data..')
 transform_train = transforms.Compose([
-    transforms.RandomCrop(32, padding=4),
+    transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
 transform_test = transforms.Compose([
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-trainset = torchvision.datasets.CIFAR10(
-    root='../data', train=True, download=True, transform=transform_train)
+trainset = torchvision.datasets.ImageNet(
+    root='../data/imagenet/imagenet', split='train', transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
-testset = torchvision.datasets.CIFAR10(
-    root='../data', train=False, download=True, transform=transform_test)
+testset = torchvision.datasets.ImageNet(
+    root='../data/imagenet/imagenet', split='val', transform=transform_test)
 testloader = torch.utils.data.DataLoader(
     testset, batch_size=100, shuffle=False, num_workers=2)
-
-classes = ('plane', 'car', 'bird', 'cat', 'deer',
-           'dog', 'frog', 'horse', 'ship', 'truck')
 
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-net,net_name = QuadCompression(), 'QuadCompression'
-# net,net_name = timm.create_model('convnextv2_tiny',num_classes=10), 'convnextv2_tiny'
-# net,net_name = timm.create_model('convnextv2_small',num_classes=10), 'convnextv2_small'
-# net,net_name = timm.create_model('seresnet18',num_classes=10), "seresnet18"
-# net,net_name = timm.create_model('resnet101',num_classes=10), "resnet101"
-# net,net_name = timm.create_model('efficientnet_b0',num_classes=10), "efficientnet_b0"
-# net,net_name = timm.create_model('regnetx_080',num_classes=10), "regnetx_080"
-# net,net_name = timm.create_model('convnext_nano',num_classes=10), "convnext_nano"
-# net,net_name = timm.create_model('convnext_pico',num_classes=10), "convnext_pico"
+# net,net_name = QuadCompression(), 'QuadCompression'
+# net,net_name = timm.create_model('convnextv2_tiny',num_classes=1000), 'convnextv2_tiny'
+# net,net_name = timm.create_model('convnextv2_small',num_classes=1000), 'convnextv2_small'
+# net,net_name = timm.create_model('seresnet18',num_classes=10000), "seresnet18"
+# net,net_name = timm.create_model('resnet101',num_classes=1000), "resnet101"
+net,net_name = timm.create_model('vovnet57a',num_classes=1000), "vovnet57a"
+# net,net_name = timm.create_model('regnetx_080',num_classes=1000), "regnetx_080"
+# net,net_name = timm.create_model('convnext_nano',num_classes=1000), "convnext_nano"
+# net,net_name = timm.create_model('convnext_pico',num_classes=1000), "convnext_pico"
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)

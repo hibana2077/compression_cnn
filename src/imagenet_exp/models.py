@@ -15,9 +15,8 @@ class Compression(nn.Module):
         self.flatten = nn.Flatten()
         self.conv1 = nn.Conv2d(3, 16, 3)
         self.conv2 = nn.Conv2d(16, 32, 3)
-        self.conv3 = nn.Conv2d(32, 96, 3)
-        self.conv4 = nn.Conv2d(96, 384, 3)# maybe change dim 96 -> 384
-        self.conv5 = nn.Conv2d(912, 96, 1)
+        self.conv3 = nn.Conv2d(32, 64, 3)
+        self.conv4 = nn.Conv2d(64, 128, 3)# maybe change dim 96 -> 384
         
     def forward(self, x):
         temp_stack = []
@@ -33,11 +32,10 @@ class Compression(nn.Module):
         x = self.pool(x)
         total = torch.cat(temp_stack, dim=1)# maybe can add more conv layers
         x = torch.cat([x, total], dim=1)
-        x = self.conv5(x)
         x = F.layer_norm(x, x.size()[1:])
         x = self.flatten(x)
         x = F.gelu(x)
-        return x # (4,2400)
+        return x # (4,9200)
     
 class DueCompression(nn.Module):
     def __init__(self):
@@ -45,8 +43,8 @@ class DueCompression(nn.Module):
         self.name = 'Due_CompressionNet'
         self.compressionA = Compression()
         self.compressionB = Compression()
-        self.fusion1 = nn.Linear(2400*2, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion1 = nn.Linear(9200*2, 1024)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -67,8 +65,8 @@ class QuadCompression(nn.Module):
         self.compressionB = Compression()
         self.compressionC = Compression()
         self.compressionD = Compression()
-        self.fusion1 = nn.Linear(2400*4, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion1 = nn.Linear(9200*4, 1024)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -95,8 +93,8 @@ class OctoCompression(nn.Module):
         self.compressionF = Compression()
         self.compressionG = Compression()
         self.compressionH = Compression()
-        self.fusion1 = nn.Linear(2400*8, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion1 = nn.Linear(9200*8, 1024)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
         
     def forward(self, x):
@@ -135,8 +133,8 @@ class HexaCompression(nn.Module):
         self.compressionN = Compression() #14
         self.compressionO = Compression() #15
         self.compressionP = Compression() #16
-        self.fusion1 = nn.Linear(2400*16, 1024)
-        self.fusion2 = nn.Linear(1024, 10)
+        self.fusion1 = nn.Linear(9200*16, 1024)
+        self.fusion2 = nn.Linear(1024, 100)
         self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
@@ -164,7 +162,7 @@ class HexaCompression(nn.Module):
         return x
 
 if __name__ == '__main__':
-    model = Compression()
+    model = HexaCompression()
     x = torch.randn(4, 3, 32, 32)
     y = model(x)
     print(f"Parameter count(M): {sum(p.numel() for p in model.parameters()) / 1e6}")
