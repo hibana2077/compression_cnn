@@ -37,12 +37,12 @@ transform_train = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    transforms.Normalize((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025)),
 ])
 
 transform_test = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    transforms.Normalize((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025)),
 ])
 
 trainset = torchvision.datasets.CIFAR100(
@@ -60,31 +60,32 @@ print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
 # net,net_name = CompressionNet_tiny(), 'CompressionNet_tiny'
 # net,net_name = CompressionNet_small(), 'CompressionNet_small'
-net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
+# net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
 # ResNet
-# net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=10), 'resnet18'
-# net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=10), 'resnet50'
-# net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=10), 'resnet101'
-# net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=10), 'resnet152'
+# net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=100), 'resnet18'
+net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100), 'resnet34'
+# net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=100), 'resnet50'
+# net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=100), 'resnet101'
+# net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=100), 'resnet152'
 # EfficientNet
-# net, net_name = timm.create_model('efficientnet_b0', pretrained=False, num_classes=10), 'efficientnet_b0'
-# net, net_name = timm.create_model('efficientnet_b1', pretrained=False, num_classes=10), 'efficientnet_b1'
-# net, net_name = timm.create_model('efficientnet_b2', pretrained=False, num_classes=10), 'efficientnet_b2'
-# net, net_name = timm.create_model('efficientnet_b3', pretrained=False, num_classes=10), 'efficientnet_b3'
-# net, net_name = timm.create_model('efficientnet_b4', pretrained=False, num_classes=10), 'efficientnet_b4'
-# net, net_name = timm.create_model('efficientnet_b5', pretrained=False, num_classes=10), 'efficientnet_b5'
-# net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=10), 'efficientnet_b6'
-# net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=10), 'efficientnet_b7'
+# net, net_name = timm.create_model('efficientnet_b0', pretrained=False, num_classes=100), 'efficientnet_b0'
+# net, net_name = timm.create_model('efficientnet_b1', pretrained=False, num_classes=100), 'efficientnet_b1'
+# net, net_name = timm.create_model('efficientnet_b2', pretrained=False, num_classes=100), 'efficientnet_b2'
+# net, net_name = timm.create_model('efficientnet_b3', pretrained=False, num_classes=100), 'efficientnet_b3'
+# net, net_name = timm.create_model('efficientnet_b4', pretrained=False, num_classes=100), 'efficientnet_b4'
+# net, net_name = timm.create_model('efficientnet_b5', pretrained=False, num_classes=100), 'efficientnet_b5'
+# net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=100), 'efficientnet_b6'
+# net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=100), 'efficientnet_b7'
 # Convnext
-# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=10), 'convnextv2_atto'
-# net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=10), 'convnextv2_femto'
-# net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=10), 'convnextv2_pico'
-# net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=10), 'convnextv2_nano'
-# net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=10), 'convnextv2_tiny'
-# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=10), 'convnextv2_small'
-# net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=10), 'convnextv2_base'
-# net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=10), 'convnextv2_large'
-# net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=10), 'convnextv2_huge'
+# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=100), 'convnextv2_atto'
+# net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=100), 'convnextv2_femto'
+# net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=100), 'convnextv2_pico'
+# net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=100), 'convnextv2_nano'
+# net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=100), 'convnextv2_tiny'
+# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=100), 'convnextv2_small'
+# net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=100), 'convnextv2_base'
+# net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=100), 'convnextv2_large'
+# net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=100), 'convnextv2_huge'
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
@@ -104,7 +105,8 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=5e-4)
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4)
-optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=0.05, betas=(0.9, 0.999))
+# optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=0.05, betas=(0.9, 0.999))
+optimizer = optim.SGD(net.parameters(), lr=0.1,momentum=0.9, weight_decay=5e-4)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 
