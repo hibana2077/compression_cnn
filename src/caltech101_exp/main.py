@@ -13,6 +13,7 @@ import os
 import json
 import argparse
 
+from torch.utils.data import DataLoader,random_split
 from models import *
 from utils import progress_bar
 
@@ -33,64 +34,63 @@ start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 # Data
 print('==> Preparing data..')
-transform_train = transforms.Compose([
-    transforms.RandomCrop(32, padding=4),
+transform_full = transforms.Compose([
+    transforms.Grayscale(num_output_channels=3),
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025)),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 ])
 
-transform_test = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025)),
-])
+dataset = torchvision.datasets.Caltech101(
+    root='../data', target_type='category', download=True, transform=transform_full)
 
-trainset = torchvision.datasets.Caltech101(
-    root='../data', train=True, download=True, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+train_size = int(0.8 * len(dataset))
+test_size = len(dataset) - train_size
+train_dataset, test_dataset = random_split(dataset, [train_size, test_size])
 
-testset = torchvision.datasets.Caltech101(
-    root='../data', train=False, download=True, transform=transform_test)
-testloader = torch.utils.data.DataLoader(
-    testset, batch_size=100, shuffle=False, num_workers=2)
+trainloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+testloader = DataLoader(test_dataset, batch_size=100, shuffle=False, num_workers=2)
 
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-# net,net_name = CompressionNet_tiny(), 'CompressionNet_tiny'
-# net,net_name = CompressionNet_small(), 'CompressionNet_small'
-# net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
+net,net_name = CompressionNet_tiny(num_classes=101), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_small(num_classes=101), 'CompressionNet_small'
+# net,net_name = CompressionNet_base(num_classes=101), 'CompressionNet_base'
+# net,net_name = CompressionNet_medium(num_classes=101), 'CompressionNet_medium'
+# net,net_name = CompressionNet_large(num_classes=101), 'CompressionNet_large'
 # ResNet
-# net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=100), 'resnet18'
-# net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100), 'resnet34'
-# net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=100), 'resnet50'
-# net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=100), 'resnet101'
-# net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=100), 'resnet152'
+# net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=101), 'resnet18'
+# net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=101), 'resnet34'
+# net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=101), 'resnet50'
+# net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=101), 'resnet101'
+# net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=101), 'resnet152'
 # EfficientNet
-# net, net_name = timm.create_model('efficientnet_b0', pretrained=False, num_classes=100), 'efficientnet_b0'
-# net, net_name = timm.create_model('efficientnet_b1', pretrained=False, num_classes=100), 'efficientnet_b1'
-# net, net_name = timm.create_model('efficientnet_b2', pretrained=False, num_classes=100), 'efficientnet_b2'
-# net, net_name = timm.create_model('efficientnet_b3', pretrained=False, num_classes=100), 'efficientnet_b3'
-# net, net_name = timm.create_model('efficientnet_b4', pretrained=False, num_classes=100), 'efficientnet_b4'
-# net, net_name = timm.create_model('efficientnet_b5', pretrained=False, num_classes=100), 'efficientnet_b5'
-# net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=100), 'efficientnet_b6'
-# net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=100), 'efficientnet_b7'
+# net, net_name = timm.create_model('efficientnet_b0', pretrained=False, num_classes=101), 'efficientnet_b0'
+# net, net_name = timm.create_model('efficientnet_b1', pretrained=False, num_classes=101), 'efficientnet_b1'
+# net, net_name = timm.create_model('efficientnet_b2', pretrained=False, num_classes=101), 'efficientnet_b2'
+# net, net_name = timm.create_model('efficientnet_b3', pretrained=False, num_classes=101), 'efficientnet_b3'
+# net, net_name = timm.create_model('efficientnet_b4', pretrained=False, num_classes=101), 'efficientnet_b4'
+# net, net_name = timm.create_model('efficientnet_b5', pretrained=False, num_classes=101), 'efficientnet_b5'
+# net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=101), 'efficientnet_b6'
+# net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=101), 'efficientnet_b7'
 # Convnext
-# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=100), 'convnextv2_atto'
-# net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=100), 'convnextv2_femto'
-# net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=100), 'convnextv2_pico'
-# net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=100), 'convnextv2_nano'
-# net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=100), 'convnextv2_tiny'
-# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=100), 'convnextv2_small'
-# net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=100), 'convnextv2_base'
-# net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=100), 'convnextv2_large'
-# net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=100), 'convnextv2_huge'
+# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=101), 'convnextv2_atto'
+# net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=101), 'convnextv2_femto'
+# net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=101), 'convnextv2_pico'
+# net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=101), 'convnextv2_nano'
+# net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=101), 'convnextv2_tiny'
+# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=101), 'convnextv2_small'
+# net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=101), 'convnextv2_base'
+# net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=101), 'convnextv2_large'
+# net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=101), 'convnextv2_huge'
 # DenseNet
-net, net_name = timm.create_model('densenet121', pretrained=False, num_classes=100), 'densenet121'
-# net, net_name = timm.create_model('densenet161', pretrained=False, num_classes=100), 'densenet161'
-# net, net_name = timm.create_model('densenet169', pretrained=False, num_classes=100), 'densenet169'
-# net, net_name = timm.create_model('densenet201', pretrained=False, num_classes=100), 'densenet201'
+# net, net_name = timm.create_model('densenet121', pretrained=False, num_classes=101), 'densenet121'
+# net, net_name = timm.create_model('densenet161', pretrained=False, num_classes=101), 'densenet161'
+# net, net_name = timm.create_model('densenet169', pretrained=False, num_classes=101), 'densenet169'
+# net, net_name = timm.create_model('densenet201', pretrained=False, num_classes=101), 'densenet201'
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
@@ -180,7 +180,7 @@ def test(epoch):
         best_acc = acc
 
 
-for epoch in range(start_epoch, start_epoch+200):
+for epoch in range(start_epoch, start_epoch+90):
     train(epoch)
     test(epoch)
     scheduler.step()

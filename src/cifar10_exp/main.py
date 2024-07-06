@@ -13,7 +13,7 @@ import os
 import json
 import argparse
 
-from new_models import *
+from models import *
 from utils import progress_bar
 
 info = {}
@@ -61,11 +61,11 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # Our model
-net, net_name = CompressionNet_small(), 'CompressionNet_small'
-# net, net_name = CompressionNet_tiny(), 'CompressionNet_tiny'
-# net,net_name = QuadCompression(), 'QuadCompression'
-# net, net_name = OctoCompression(), 'OctoCompression'
-# net, net_name = HexaCompression(), 'HexaCompression'
+net,net_name = CompressionNet_tiny(num_classes=100), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_small(num_classes=100), 'CompressionNet_small'
+# net,net_name = CompressionNet_base(num_classes=100), 'CompressionNet_base'
+# net,net_name = CompressionNet_medium(num_classes=100), 'CompressionNet_medium'
+# net,net_name = CompressionNet_large(num_classes=100), 'CompressionNet_large'
 # ResNet
 # net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=10), 'resnet18'
 # net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=10), 'resnet50'

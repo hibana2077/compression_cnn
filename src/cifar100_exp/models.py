@@ -121,7 +121,57 @@ class Compression_S(nn.Module): #small
         x = self.flatten(x)
         x = F.gelu(x)
         return x # (4, 1152)
-    
+
+class Compression_B(nn.Module): #base
+    def __init__(self):
+        super(Compression_B, self).__init__()
+        self.compress = nn.Sequential(
+            nn.AdaptiveAvgPool2d((3, 3)),
+            nn.GELU()
+        )
+        self.final_pool = nn.AdaptiveAvgPool2d((3, 3))
+        self.pool = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+        self.conv1 = nn.Conv2d(3, 32, 3)
+        self.se1 = SELayer(32)
+        self.conv2 = nn.Conv2d(32, 64, 3)
+        self.se2 = SELayer(64)
+        self.conv3 = nn.Conv2d(64, 128, 3)
+        self.se3 = SELayer(128)
+        self.conv4 = nn.Conv2d(128, 384, 3)
+        self.se4 = SELayer(384)
+        self.conv5 = nn.Conv2d(992, 200, 1)
+        self.se5 = SELayer(200)
+        
+    def forward(self, x):
+        temp_stack = []
+        x = self.conv1(x)
+        x = self.se1(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv2(x)
+        x = self.se2(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        x = self.conv3(x)
+        x = self.se3(x)
+        x = self.pool(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv4(x)
+        x = self.se4(x)
+        temp_stack.append(self.compress(x))
+        if x.size()[-2:] != (3, 3):
+            x = self.final_pool(x)
+        total = torch.cat(temp_stack, dim=1)
+        x = torch.cat([x, total], dim=1)
+        x = self.conv5(x)
+        x = self.se5(x)
+        x = F.layer_norm(x, x.size()[1:])
+        x = self.flatten(x)
+        x = F.gelu(x)
+        return x # (4, 1800)
+
 class Compression_M(nn.Module): #medium
     def __init__(self):
         super(Compression_M, self).__init__()
@@ -171,16 +221,66 @@ class Compression_M(nn.Module): #medium
         x = self.flatten(x)
         x = F.gelu(x)
         return x # (4, 2304)
+    
+class Compression_L(nn.Module): #large
+    def __init__(self):
+        super(Compression_L, self).__init__()
+        self.compress = nn.Sequential(
+            nn.AdaptiveAvgPool2d((3, 3)),
+            nn.GELU()
+        )
+        self.final_pool = nn.AdaptiveAvgPool2d((3, 3))
+        self.pool = nn.MaxPool2d(2, 2)
+        self.flatten = nn.Flatten()
+        self.conv1 = nn.Conv2d(3, 96, 3)
+        self.se1 = SELayer(96)
+        self.conv2 = nn.Conv2d(96, 256, 3)
+        self.se2 = SELayer(256)
+        self.conv3 = nn.Conv2d(256, 512, 3)
+        self.se3 = SELayer(512)
+        self.conv4 = nn.Conv2d(512, 768, 3)
+        self.se4 = SELayer(768)
+        self.conv5 = nn.Conv2d(2400, 512, 1)
+        self.se5 = SELayer(512)
+        
+    def forward(self, x):
+        temp_stack = []
+        x = self.conv1(x)
+        x = self.se1(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv2(x)
+        x = self.se2(x)
+        x = F.relu(x)
+        temp_stack.append(self.compress(x))
+        x = self.pool(x)
+        x = self.conv3(x)
+        x = self.se3(x)
+        x = self.pool(x)
+        temp_stack.append(self.compress(x))
+        x = self.conv4(x)
+        x = self.se4(x)
+        temp_stack.append(self.compress(x))
+        if x.size()[-2:] != (3, 3):
+            x = self.final_pool(x)
+        total = torch.cat(temp_stack, dim=1)
+        x = torch.cat([x, total], dim=1)
+        x = self.conv5(x)
+        x = self.se5(x)
+        x = F.layer_norm(x, x.size()[1:])
+        x = self.flatten(x)
+        x = F.gelu(x)
+        return x # (4, 4608)
 
 class CompressionNet_tiny(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=101):
         super(CompressionNet_tiny, self).__init__()
         self.compression = Compression_T()
         self.cls = nn.Sequential(
             nn.Linear(384, 64),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(64, 100)
+            nn.Linear(64, num_classes)
         )
 
     def forward(self, x):
@@ -189,14 +289,30 @@ class CompressionNet_tiny(nn.Module):
         return x
     
 class CompressionNet_small(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=101):
         super(CompressionNet_small, self).__init__()
         self.compression = Compression_S()
         self.cls = nn.Sequential(
             nn.Linear(1152, 128),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(128, 100)
+            nn.Linear(128, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.compression(x)
+        x = self.cls(x)
+        return x
+
+class CompressionNet_base(nn.Module):
+    def __init__(self, num_classes=101):
+        super(CompressionNet_base, self).__init__()
+        self.compression = Compression_B()
+        self.cls = nn.Sequential(
+            nn.Linear(1800, 200),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(200, num_classes)
         )
 
     def forward(self, x):
@@ -205,14 +321,30 @@ class CompressionNet_small(nn.Module):
         return x
 
 class CompressionNet_medium(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=101):
         super(CompressionNet_medium, self).__init__()
         self.compression = Compression_M()
         self.cls = nn.Sequential(
             nn.Linear(2304, 256),
             nn.GELU(),
             nn.Dropout(0.5),
-            nn.Linear(256, 100)
+            nn.Linear(256, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.compression(x)
+        x = self.cls(x)
+        return x
+    
+class CompressionNet_large(nn.Module):
+    def __init__(self, num_classes=101):
+        super(CompressionNet_large, self).__init__()
+        self.compression = Compression_L()
+        self.cls = nn.Sequential(
+            nn.Linear(4608, 512),
+            nn.GELU(),
+            nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x):
@@ -221,7 +353,7 @@ class CompressionNet_medium(nn.Module):
         return x
     
 if __name__ == '__main__':
-    model = CompressionNet_medium()
+    model = CompressionNet_large()
     x = torch.randn(4, 3, 32, 32)
     y = model(x)
     print(f"Parameter count(M): {sum(p.numel() for p in model.parameters()) / 1e6}")

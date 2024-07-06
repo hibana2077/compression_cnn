@@ -58,9 +58,11 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-# net,net_name = CompressionNet_tiny(), 'CompressionNet_tiny'
-# net,net_name = CompressionNet_small(), 'CompressionNet_small'
-# net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
+# net,net_name = CompressionNet_tiny(num_classes=100), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_small(num_classes=100), 'CompressionNet_small'
+# net,net_name = CompressionNet_base(num_classes=100), 'CompressionNet_base'
+# net,net_name = CompressionNet_medium(num_classes=100), 'CompressionNet_medium'
+# net,net_name = CompressionNet_large(num_classes=100), 'CompressionNet_large'
 # ResNet
 # net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=100), 'resnet18'
 # net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100), 'resnet34'
