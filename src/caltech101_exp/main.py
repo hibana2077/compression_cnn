@@ -1,4 +1,4 @@
-'''Train CIFAR100 with PyTorch.'''
+'''Train Caltech101 with PyTorch.'''
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -22,7 +22,7 @@ train_acc_history = []
 test_loss_history = []
 test_acc_history = []
 BATCH_SIZE = 128
-parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training')
+parser = argparse.ArgumentParser(description='PyTorch Caltech101 Training')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
 args = parser.parse_args()
@@ -45,12 +45,12 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025)),
 ])
 
-trainset = torchvision.datasets.CIFAR100(
+trainset = torchvision.datasets.Caltech101(
     root='../data', train=True, download=True, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
 
-testset = torchvision.datasets.CIFAR100(
+testset = torchvision.datasets.Caltech101(
     root='../data', train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
     testset, batch_size=100, shuffle=False, num_workers=2)
