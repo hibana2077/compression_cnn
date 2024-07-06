@@ -63,7 +63,7 @@ print('==> Building model..')
 # net,net_name = CompressionNet_medium(), 'CompressionNet_medium'
 # ResNet
 # net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=100), 'resnet18'
-net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100), 'resnet34'
+# net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100), 'resnet34'
 # net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=100), 'resnet50'
 # net, net_name = timm.create_model('resnet101', pretrained=False, num_classes=100), 'resnet101'
 # net, net_name = timm.create_model('resnet152', pretrained=False, num_classes=100), 'resnet152'
@@ -82,7 +82,7 @@ net, net_name = timm.create_model('resnet34', pretrained=False, num_classes=100)
 # net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=100), 'convnextv2_pico'
 # net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=100), 'convnextv2_nano'
 # net, net_name = timm.create_model('convnextv2_tiny', pretrained=False, num_classes=100), 'convnextv2_tiny'
-# net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=100), 'convnextv2_small'
+net, net_name = timm.create_model('convnextv2_small', pretrained=False, num_classes=100), 'convnextv2_small'
 # net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=100), 'convnextv2_base'
 # net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=100), 'convnextv2_large'
 # net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=100), 'convnextv2_huge'
