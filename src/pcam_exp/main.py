@@ -21,7 +21,7 @@ train_loss_history = []
 train_acc_history = []
 test_loss_history = []
 test_acc_history = []
-BATCH_SIZE = 1024
+BATCH_SIZE = 960
 parser = argparse.ArgumentParser(description='PyTorch Flowers 102 Training')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
@@ -57,7 +57,7 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print('==> Building model..')
 # net,net_name = Compression(), 'Compression'
-net,net_name = CompressionNet_tiny(num_classes=2), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_tiny(num_classes=2), 'CompressionNet_tiny'
 # net,net_name = CompressionNet_small(num_classes=2), 'CompressionNet_small'
 # net,net_name = CompressionNet_base(num_classes=2), 'CompressionNet_base'
 # net,net_name = CompressionNet_medium(num_classes=2), 'CompressionNet_medium'
@@ -78,7 +78,7 @@ net,net_name = CompressionNet_tiny(num_classes=2), 'CompressionNet_tiny'
 # net, net_name = timm.create_model('efficientnet_b6', pretrained=False, num_classes=2), 'efficientnet_b6'
 # net, net_name = timm.create_model('efficientnet_b7', pretrained=False, num_classes=2), 'efficientnet_b7'
 # Convnext
-# net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=2), 'convnextv2_atto'
+net, net_name = timm.create_model('convnextv2_atto', pretrained=False, num_classes=2), 'convnextv2_atto'
 # net, net_name = timm.create_model('convnextv2_femto', pretrained=False, num_classes=2), 'convnextv2_femto'
 # net, net_name = timm.create_model('convnextv2_pico', pretrained=False, num_classes=2), 'convnextv2_pico'
 # net, net_name = timm.create_model('convnextv2_nano', pretrained=False, num_classes=2), 'convnextv2_nano'
