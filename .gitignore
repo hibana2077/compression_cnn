@@ -13,3 +13,7 @@ src/data/caltech101
 src/caltech101_exp/__pycache__/models.cpython-312.pyc
 src/caltech101_exp/__pycache__/utils.cpython-312.pyc
 src/caltech101_exp/checkpoint/ckpt.pth
+src/data/flowers-102
+src/data/pcam
+src/data/SUN397.tar.gz
+src/flowers102_exp/checkpoint/ckpt.pth

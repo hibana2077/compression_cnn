@@ -65,7 +65,7 @@ print('==> Building model..')
 # net,net_name = CompressionNet_small(num_classes=10), 'CompressionNet_small'
 # net,net_name = CompressionNet_base(num_classes=10), 'CompressionNet_base'
 # net,net_name = CompressionNet_medium(num_classes=10), 'CompressionNet_medium'
-net,net_name = CompressionNet_large(num_classes=10), 'CompressionNet_large'
+# net,net_name = CompressionNet_large(num_classes=10), 'CompressionNet_large'
 # ResNet
 # net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=10), 'resnet18'
 # net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=10), 'resnet50'
@@ -90,6 +90,11 @@ net,net_name = CompressionNet_large(num_classes=10), 'CompressionNet_large'
 # net, net_name = timm.create_model('convnextv2_base', pretrained=False, num_classes=10), 'convnextv2_base'
 # net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=10), 'convnextv2_large'
 # net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=10), 'convnextv2_huge'
+# DenseNet
+# net, net_name = timm.create_model('densenet121', pretrained=False, num_classes=100), 'densenet121'
+net, net_name = timm.create_model('densenet161', pretrained=False, num_classes=100), 'densenet161'
+# net, net_name = timm.create_model('densenet169', pretrained=False, num_classes=100), 'densenet169'
+# net, net_name = timm.create_model('densenet201', pretrained=False, num_classes=100), 'densenet201'
 print('Number of parameters(M):', sum(p.numel() for p in net.parameters()) / 1e6)
 print(net_name)
 net = net.to(device)
