@@ -89,7 +89,7 @@ print('==> Building model..')
 # net, net_name = timm.create_model('convnextv2_large', pretrained=False, num_classes=100), 'convnextv2_large'
 # net, net_name = timm.create_model('convnextv2_huge', pretrained=False, num_classes=100), 'convnextv2_huge'
 # DenseNet
-net, net_name = timm.create_model('densenet121', pretrained=False, num_classes=100), 'densenet121'
+# net, net_name = timm.create_model('densenet121', pretrained=False, num_classes=100), 'densenet121'
 # net, net_name = timm.create_model('densenet161', pretrained=False, num_classes=100), 'densenet161'
 # net, net_name = timm.create_model('densenet169', pretrained=False, num_classes=100), 'densenet169'
 # net, net_name = timm.create_model('densenet201', pretrained=False, num_classes=100), 'densenet201'
