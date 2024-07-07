@@ -17,3 +17,4 @@ src/data/flowers-102
 src/data/pcam
 src/data/SUN397.tar.gz
 src/flowers102_exp/checkpoint/ckpt.pth
+src/pcam_exp/checkpoint/ckpt.pth
