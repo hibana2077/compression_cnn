@@ -61,11 +61,11 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 # Model
 print('==> Building model..')
 # Our model
-net,net_name = CompressionNet_tiny(num_classes=100), 'CompressionNet_tiny'
-# net,net_name = CompressionNet_small(num_classes=100), 'CompressionNet_small'
-# net,net_name = CompressionNet_base(num_classes=100), 'CompressionNet_base'
-# net,net_name = CompressionNet_medium(num_classes=100), 'CompressionNet_medium'
-# net,net_name = CompressionNet_large(num_classes=100), 'CompressionNet_large'
+# net,net_name = CompressionNet_tiny(num_classes=10), 'CompressionNet_tiny'
+# net,net_name = CompressionNet_small(num_classes=10), 'CompressionNet_small'
+# net,net_name = CompressionNet_base(num_classes=10), 'CompressionNet_base'
+# net,net_name = CompressionNet_medium(num_classes=10), 'CompressionNet_medium'
+net,net_name = CompressionNet_large(num_classes=10), 'CompressionNet_large'
 # ResNet
 # net, net_name = timm.create_model('resnet18', pretrained=False, num_classes=10), 'resnet18'
 # net, net_name = timm.create_model('resnet50', pretrained=False, num_classes=10), 'resnet50'
@@ -109,7 +109,7 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=5e-4)
 # optimizer = optim.AdamW(net.parameters(), lr=4e-4)
-optimizer = optim.AdamW(net.parameters(), lr=4e-4, weight_decay=0.05, betas=(0.9, 0.999))
+optimizer = optim.SGD(net.parameters(), lr=0.1,momentum=0.9, weight_decay=5e-4)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 
